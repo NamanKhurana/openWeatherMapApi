@@ -26,13 +26,14 @@ class Display
     showWeather(data)
     {
         const {name,sys:{country},main:{temp,humidity}} = data
-        const {icon} = weather[0];
+        const {icon} = data.weather[0];
 
         this.results.classList.add("showItem")
         this.cityName.textContent=name;
-        this.cityCountry.textContent=temp;
+        this.cityCountry.textContent=country;
+        this.cityTemp.textContent=temp;
         this.cityHumidity.textContent=humidity
-        this.cityIcon.src = `http://openweathermap.org/img/w/${icon}`
+        this.cityIcon.src = `http://openweathermap.org/img/w/${icon}.png`
     }
 }
 
@@ -43,6 +44,7 @@ class Display
 
     //CLASS
    const ajax = new AjaxWeather()
+   const display = new Display()
 
     form.addEventListener("submit", (event) => {
         console.log("hello")
@@ -54,7 +56,16 @@ class Display
             showFeedback("City value cannot be empty")
         }
         else {
-             ajax.getWeather(city).then(data => console.log(data))
+             ajax.getWeather(city).then(data => {
+                 if(data.message === "city not found")
+                 {
+                     showFeedback("City with such name is not Found")
+                 }
+                 else
+                 {
+                     display.showWeather(data)
+                 }
+             })
         }
 
         function showFeedback(test) {
